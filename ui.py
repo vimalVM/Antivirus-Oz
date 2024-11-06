@@ -1,99 +1,86 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QStackedWidget, QFrame
-from PyQt5.QtGui import QFont, QColor, QPalette, QIcon
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
+from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtCore import Qt
 
-class AntivirusApp(QWidget):
+class AntivirusUI(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("Ozone Antivirus")
+        self.setFixedSize(600, 400)
+        
+        # Main layout
+        main_layout = QHBoxLayout(self)
+        
+        # Sidebar layout with buttons
+        sidebar = QVBoxLayout()
+        sidebar.setSpacing(15)
+        
+        self.scan_button = QPushButton("Scan")
+        self.protection_button = QPushButton("Protection")
+        self.toolbox_button = QPushButton("Toolbox")
+        
+        # Style the buttons
+        for button in [self.scan_button, self.protection_button, self.toolbox_button]:
+            button.setFont(QFont("Arial", 14))
+            button.setFixedHeight(40)
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: #004d99;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                }
+                QPushButton:hover {
+                    background-color: #0066cc;
+                }
+                QPushButton:pressed {
+                    background-color: #003366;
+                }
+            """)
+        
+        # Connect buttons to actions
+        self.scan_button.clicked.connect(self.show_scan_message)
+        self.protection_button.clicked.connect(self.show_protection_message)
+        self.toolbox_button.clicked.connect(self.show_toolbox_message)
+        
+        # Add buttons to sidebar layout
+        sidebar.addWidget(self.scan_button)
+        sidebar.addWidget(self.protection_button)
+        sidebar.addWidget(self.toolbox_button)
+        sidebar.addStretch()
+        
+        # Main content area
+        self.content_area = QLabel("Your PC is safe!\nOzone Antivirus has protected your computer")
+        self.content_area.setAlignment(Qt.AlignCenter)
+        self.content_area.setFont(QFont("Arial", 16))
+        self.content_area.setStyleSheet("color: #ffffff;")
+        
+        # Style main content area
+        content_container = QWidget()
+        content_container.setStyleSheet("background-color: #0073e6; border-radius: 8px;")
+        content_layout = QVBoxLayout(content_container)
+        content_layout.addWidget(self.content_area)
+        
+        # Add sidebar and content area to main layout
+        main_layout.addLayout(sidebar)
+        main_layout.addWidget(content_container)
+        
+        # Apply main window styles
+        self.setStyleSheet("background-color: #004080;")
 
-        # Main Window setup
-        self.setWindowTitle("Baidu Antivirus")
-        self.setGeometry(100, 100, 600, 400)
-        self.setStyleSheet("background-color: #1a73e8;")
+    # Slot functions for button clicks
+    def show_scan_message(self):
+        self.content_area.setText("Quick Scan initiated!")
 
-        # Layouts
-        main_layout = QVBoxLayout()
-        left_layout = QVBoxLayout()
-        right_layout = QVBoxLayout()
+    def show_protection_message(self):
+        self.content_area.setText("Protection settings are active!")
 
-        # Top bar
-        top_bar = QLabel("Baidu Antivirus 2015     Free Forever")
-        top_bar.setStyleSheet("color: white; font-size: 16px;")
-        top_bar.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(top_bar)
+    def show_toolbox_message(self):
+        self.content_area.setText("Toolbox is ready to use!")
 
-        # Left Sidebar
-        sidebar = QFrame()
-        sidebar.setStyleSheet("background-color: #2a3b52;")
-        sidebar_layout = QVBoxLayout(sidebar)
-
-        scan_button = QPushButton("Scan")
-        scan_button.setStyleSheet("color: white; font-size: 14px; background: transparent;")
-        sidebar_layout.addWidget(scan_button)
-
-        protection_button = QPushButton("Protection")
-        protection_button.setStyleSheet("color: white; font-size: 14px; background: transparent;")
-        sidebar_layout.addWidget(protection_button)
-
-        toolbox_button = QPushButton("Toolbox")
-        toolbox_button.setStyleSheet("color: #ff8c00; font-size: 14px; background: transparent;")
-        sidebar_layout.addWidget(toolbox_button)
-
-        # Add additional sidebar buttons for "Quarantine", "Trusted", and "Log"
-        quarantine_button = QPushButton("Quarantine")
-        quarantine_button.setStyleSheet("color: white; font-size: 12px; background: transparent;")
-        sidebar_layout.addWidget(quarantine_button)
-
-        trusted_button = QPushButton("Trusted")
-        trusted_button.setStyleSheet("color: white; font-size: 12px; background: transparent;")
-        sidebar_layout.addWidget(trusted_button)
-
-        log_button = QPushButton("Log")
-        log_button.setStyleSheet("color: white; font-size: 12px; background: transparent;")
-        sidebar_layout.addWidget(log_button)
-
-        # Add left sidebar to the main layout
-        sidebar_layout.addStretch()
-        main_layout.addWidget(sidebar, alignment=Qt.AlignLeft)
-
-        # Center Area
-        shield_icon = QLabel()
-        shield_icon.setPixmap(QIcon("path_to_shield_icon.png").pixmap(100, 100))  # Set a shield icon here
-        shield_icon.setAlignment(Qt.AlignCenter)
-        right_layout.addWidget(shield_icon)
-
-        status_label = QLabel("Your PC is safe!")
-        status_label.setStyleSheet("color: white; font-size: 24px; font-weight: bold;")
-        status_label.setAlignment(Qt.AlignCenter)
-        right_layout.addWidget(status_label)
-
-        info_label = QLabel("Baidu Antivirus has protected your computer for 1 day")
-        info_label.setStyleSheet("color: #b3c7f9; font-size: 14px;")
-        info_label.setAlignment(Qt.AlignCenter)
-        right_layout.addWidget(info_label)
-
-        # Quick Scan Button
-        quick_scan_button = QPushButton("Quick Scan")
-        quick_scan_button.setStyleSheet("background-color: #28a745; color: white; font-size: 16px; padding: 10px 20px;")
-        right_layout.addWidget(quick_scan_button, alignment=Qt.AlignCenter)
-
-        # Bottom Options
-        scan_options = QLabel("Full Scan   |   Custom Scan")
-        scan_options.setStyleSheet("color: white; font-size: 14px;")
-        scan_options.setAlignment(Qt.AlignCenter)
-        right_layout.addWidget(scan_options)
-
-        # Adding layouts to main layout
-        content_layout = QHBoxLayout()
-        content_layout.addWidget(sidebar)
-        content_layout.addLayout(right_layout)
-        main_layout.addLayout(content_layout)
-
-        self.setLayout(main_layout)
-
-
+# Run the application
 app = QApplication(sys.argv)
-window = AntivirusApp()
+window = AntivirusUI()
 window.show()
 sys.exit(app.exec_())
